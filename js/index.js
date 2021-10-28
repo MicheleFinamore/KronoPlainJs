@@ -2,12 +2,7 @@
 import { createTimeline } from "kronograph";
 import { nodes } from "./data";
 import { getChart, combineSelected, uncombineSelected } from "./chart";
-import { Controller } from "./controller";
 
-const combine = document.getElementById("combine");
-const uncombine = document.getElementById("uncombine");
-const load = document.getElementById("load");
-const input = document.getElementById("datetime");
 
 // converto i nodi e i link di keylines in entità ed eventi kronograph
 const convertNodesToEntities = () => {
@@ -53,52 +48,71 @@ const convertNodesToEntities = () => {
 
   return [entities, events];
 };
+var [entities, events] = convertNodesToEntities();
 
-let [entities, events] = convertNodesToEntities();
 
-document.addEventListener("DOMContentLoaded", function () {
-  const timeline_container = document.getElementById("my-timeline");
 
+
+
+document.addEventListener("DOMContentLoaded", () => {
+  console.log("page loaded. index.js");
+  const combine = document.getElementById("combine");
+  const uncombine = document.getElementById("uncombine");
+  const load = document.getElementById("load_button");
+  const input = document.getElementById("datetime");
+  const backgroundSelect = document.getElementById("background-select");
+  const positionSelect = document.getElementById("position-select");
+  const labelSelect = document.getElementById("label-color-select");
+
+  // ****** CREAZIONE TIMELINE ****** */
+  // const timeline_container = document.getElementById("my-timeline");
   const timeline = createTimeline("my-timeline");
 
-  // const data = {
-  //   entities: { "Person 1": {}, "Person 2": {} },
-  //   events: {
-  //     "Phone call 1": {
-  //       entityIds: ["Person 1", "Person 2"],
-  //       time: new Date(2020, 6, 1, 12, 0),
-  //     },
-  //     "Phone call 2": {
-  //       entityIds: ["Person 1", "Person 2"],
-  //       time: new Date(2020, 6, 1, 13, 0),
-  //     },
-  //     "Phone call 3": {
-  //       entityIds: ["Person 2", "Person 1"],
-  //       time: new Date(2020, 6, 1, 14, 0),
-  //     },
-  //   },
-  // };
-
+  // dati iniziali timeline
   const data = {
     entities: entities,
     events: events,
   };
+  // opzioni timeline
+  const timelineOptions = {
+    backgroundColor: "#333",
+    scales: {
+      showAtTop: false,
+      showAtBottom: true,
+      textColor: "#f5f7fa",
+    },
+  };
+  // entity types
+  const defaultEntityType = {
+    labelColor: "white",
+    lineWidth: 6,
+  };
+
+  const orderingName = {
+    orderingName: "firstevent",
+  };
+
+  // costruzione effettiva timeline
+  const entityTypes = { default: defaultEntityType };
+  data["entityTypes"] = entityTypes;
+  timeline.options(timelineOptions);
+  // timeline.setOrdering(orderingName);
   timeline.set(data);
   timeline.fit();
 
+  const timeline_event = new CustomEvent('timeline-ready', {detail:timeline});
+  window.document.dispatchEvent(timeline_event);
+
+  //****** EVENT LISTENERS ******** */
+
   load.addEventListener("click", () => {
-    const canvas_container = document.getElementById("kl").firstChild.id;
-    const controller = new Controller(
-      timeline,
-      KeyLines.components[canvas_container]
-    );
-    let sel = controller.chart.selection();
-    console.log("load selection", sel);
-    console.log("timeline load", controller.timeline);
-    console.log("chart ottenuto in load", getChart());
+    console.log("load clicked in index");
+    const event = new CustomEvent('get-components', {detail:timeline});
+    window.document.dispatchEvent(event);
   });
 
   combine.addEventListener("click", () => {
+    console.log("combine clicked");
     combineSelected().then(() => {
       let canvas_container = document.getElementById("kl").firstChild.id;
       let newEntities = {};
@@ -187,7 +201,7 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   uncombine.addEventListener("click", () => {
-    setTimeout(() => {
+    uncombineSelected().then(() => {
       let newEntities = {};
       let canvas_container = document.getElementById("kl").firstChild.id;
       KeyLines.components[canvas_container].each({ type: "node" }, (item) => {
@@ -226,7 +240,7 @@ document.addEventListener("DOMContentLoaded", function () {
       };
 
       timeline.set(currentData);
-    }, 1000);
+    });
   });
 
   input.addEventListener("change", (event) => {
@@ -239,82 +253,114 @@ document.addEventListener("DOMContentLoaded", function () {
     ]);
   });
 
-  // const chartDiv = "kl";
-  // let chart;
-  // console.log("dentro chart.js");
+  backgroundSelect.addEventListener("change", (e) => {
+    const value = e.target.value;
+    timelineOptions.backgroundColor = value;
+    timeline.options(timelineOptions);
+  });
 
-  // const items = [
-  //   { id: "1", type: "node", t: "Person1", c: "#f86868", d: { cluster: "1" } },
-  //   { id: "2", type: "node", t: "Person2", c: "#f7d06e", d: { cluster: "2" } },
-  //   { id: "3", type: "node", t: "Person3", c: "#2676c7", d: { cluster: "3" } },
-  //   { id: "4", type: "node", t: "Person4", c: "#5dbbb4", d: { cluster: "4" } },
-  //   { id: "5", type: "node", t: "Person5", c: "#ff8834", d: { cluster: "5" } },
-  //   { id: "6", type: "node", t: "Person6", c: "#b360d6", d: { cluster: "6" } },
-  //   {
-  //     id: "link1",
-  //     id1: "1",
-  //     id2: "2",
-  //     a2: true,
-  //     type: "link",
-  //     c: "#2da167",
-  //     d: new Date(2020, 6, 1, 12, 0),
-  //   },
-  //   {
-  //     id: "link2",
-  //     id1: "1",
-  //     id2: "5",
-  //     a2: true,
-  //     type: "link",
-  //     c: "#2da167",
-  //     d: new Date(2020, 6, 1, 8, 0),
-  //   },
-  //   {
-  //     id: "link3",
-  //     id1: "2",
-  //     id2: "3",
-  //     a2: true,
-  //     type: "link",
-  //     c: "#2da167",
-  //     d: new Date(2020, 6, 1, 5, 0),
-  //   },
-  //   {
-  //     id: "link4",
-  //     id1: "3",
-  //     id2: "4",
-  //     a2: true,
-  //     type: "link",
-  //     c: "#2da167",
-  //     d: new Date(2020, 6, 1, 15, 0),
-  //   },
-  //   {
-  //     id: "link5",
-  //     id1: "3",
-  //     id2: "1",
-  //     a2: true,
-  //     type: "link",
-  //     c: "#2da167",
-  //     d: new Date(2020, 6, 1, 19, 0),
-  //   },
-  //   {
-  //     id: "link6",
-  //     id1: "6",
-  //     id2: "2",
-  //     a2: true,
-  //     type: "link",
-  //     c: "#2da167",
-  //     d: new Date(2020, 6, 1, 21, 0),
-  //   },
-  // ];
+  positionSelect.addEventListener("change", (e) => {
+    const value = e.target.value;
+    if (value === "both") {
+      timelineOptions.scales.showAtBottom = true;
+      timelineOptions.scales.showAtTop = true;
+    } else if (value === "top") {
+      timelineOptions.scales.showAtBottom = false;
+      timelineOptions.scales.showAtTop = true;
+    } else {
+      timelineOptions.scales.showAtBottom = true;
+      timelineOptions.scales.showAtTop = false;
+    }
+    timeline.options(timelineOptions);
+  });
 
-  // let nodes = {
-  //   type: "LinkChart",
-  //   items: items,
-  // };
-
-  // console.log("nodes",nodes);
-  // KeyLines.promisify();
-  // KeyLines.create({container:chartDiv}).then((loadedChart) => {
-  //   chart = loadedChart;
-  //   chart.load(nodes);
-  // });
+  labelSelect.addEventListener("change", (e) => {
+    const colour = e.target.value;
+    defaultEntityType.labelColor = colour;
+    entityTypes.default = defaultEntityType;
+    data["entityTypes"] = entityTypes;
+    timeline.set(data);
+  });
 });
+
+// document.addEventListener("DOMContentLoaded", function () {
+
+//   // const chartDiv = "kl";
+//   // let chart;
+//   // console.log("dentro chart.js");
+
+//   // const items = [
+//   //   { id: "1", type: "node", t: "Person1", c: "#f86868", d: { cluster: "1" } },
+//   //   { id: "2", type: "node", t: "Person2", c: "#f7d06e", d: { cluster: "2" } },
+//   //   { id: "3", type: "node", t: "Person3", c: "#2676c7", d: { cluster: "3" } },
+//   //   { id: "4", type: "node", t: "Person4", c: "#5dbbb4", d: { cluster: "4" } },
+//   //   { id: "5", type: "node", t: "Person5", c: "#ff8834", d: { cluster: "5" } },
+//   //   { id: "6", type: "node", t: "Person6", c: "#b360d6", d: { cluster: "6" } },
+//   //   {
+//   //     id: "link1",
+//   //     id1: "1",
+//   //     id2: "2",
+//   //     a2: true,
+//   //     type: "link",
+//   //     c: "#2da167",
+//   //     d: new Date(2020, 6, 1, 12, 0),
+//   //   },
+//   //   {
+//   //     id: "link2",
+//   //     id1: "1",
+//   //     id2: "5",
+//   //     a2: true,
+//   //     type: "link",
+//   //     c: "#2da167",
+//   //     d: new Date(2020, 6, 1, 8, 0),
+//   //   },
+//   //   {
+//   //     id: "link3",
+//   //     id1: "2",
+//   //     id2: "3",
+//   //     a2: true,
+//   //     type: "link",
+//   //     c: "#2da167",
+//   //     d: new Date(2020, 6, 1, 5, 0),
+//   //   },
+//   //   {
+//   //     id: "link4",
+//   //     id1: "3",
+//   //     id2: "4",
+//   //     a2: true,
+//   //     type: "link",
+//   //     c: "#2da167",
+//   //     d: new Date(2020, 6, 1, 15, 0),
+//   //   },
+//   //   {
+//   //     id: "link5",
+//   //     id1: "3",
+//   //     id2: "1",
+//   //     a2: true,
+//   //     type: "link",
+//   //     c: "#2da167",
+//   //     d: new Date(2020, 6, 1, 19, 0),
+//   //   },
+//   //   {
+//   //     id: "link6",
+//   //     id1: "6",
+//   //     id2: "2",
+//   //     a2: true,
+//   //     type: "link",
+//   //     c: "#2da167",
+//   //     d: new Date(2020, 6, 1, 21, 0),
+//   //   },
+//   // ];
+
+//   // let nodes = {
+//   //   type: "LinkChart",
+//   //   items: items,
+//   // };
+
+//   // console.log("nodes",nodes);
+//   // KeyLines.promisify();
+//   // KeyLines.create({container:chartDiv}).then((loadedChart) => {
+//   //   chart = loadedChart;
+//   //   chart.load(nodes);
+//   // });
+// });

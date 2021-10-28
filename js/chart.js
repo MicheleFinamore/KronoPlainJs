@@ -1,9 +1,8 @@
+import { getTimeline } from "./index";
 import { nodes } from "./data";
 
-const chartDiv = "kl";
+
 let chart;
-const combine = document.getElementById("combine");
-const uncombine = document.getElementById("uncombine");
 
 export function getChart() {
   return chart;
@@ -66,37 +65,18 @@ function getComboList() {
 }
 
 export async function combineSelected() {
-  // //prendo tutti i nodi selezionati sul chart
-  // const filteredNodes = chart
-  //   .selection()
-  //   .filter(
-  //     (id) =>
-  //       chart.getItem(id).type === "node" &&
-  //       chart.getItem(id).t !== "Combined"
-  //   );
-
-  // // costruisco l'id da dare al campo cluster dei nodi selezionati
-  // let clusterId = "";
-  // //console.log("nodes",filteredNodes);
-  // filteredNodes.forEach((item) => (clusterId = clusterId + item));
-
-  await chart
-    .combo()
-    .combine({
-      ids: selectedTopLevelNodes(),
-      label: "Cluster",
-      open: true,
-      c: "green",
-      e: 1.2,
-    });
-    // .then(() => {
-    //   // chart.getItem(filteredNodes).forEach((item) => {
-    //   //   var data = item.d;
-    //   //   data.cluster = clusterId;
-    //   //   chart.setProperties({id:item.id, d:data});
-    //   // });
-    //   console.log("Combine completata");
-    // // });
+  
+  const chart_ready = new CustomEvent("chart-ready", { detail: chart });
+  window.document.dispatchEvent(chart_ready);
+  let selected = chart.selection();
+  console.log("selected top level nodes", selected);
+  await chart.combo().combine({
+    ids: selectedTopLevelNodes(),
+    label: "Cluster",
+    open: true,
+    c: "green",
+    e: 1.2,
+  });
 }
 
 export async function uncombineSelected() {
@@ -111,28 +91,54 @@ export async function uncombineSelected() {
 }
 
 function onSelection() {
-  console.log("selection-change");
+  console.log(chart.selection());
 }
 
-function setUpEventHandlers() {
-  console.log("setUpEventHandlers");
-  // set up the button enabled states
-  chart.on("selection-change", onSelection);
 
-  // buttons
-  combine.addEventListener("click", combineSelected);
-  uncombine.addEventListener("click", uncombineSelected);
 
-  // set up the initial look
-  onSelection();
+function hoverHandler({ id }) {
+  console.log("hover id", id);
 }
 
-KeyLines.promisify();
-KeyLines.create({ container: chartDiv }).then((loadedChart) => {
-  chart = loadedChart;
-  chart.load(nodes);
-  chart.layout("standard");
-  //setUpEventHandlers();
+document.addEventListener("DOMContentLoaded", () => {
+  console.log("page loaded. chart.js");
+
+  const chartDiv = "kl";
+  const combine = document.getElementById("combine");
+  const uncombine = document.getElementById("uncombine");
+  const load = document.getElementById("load_button");
+
+  //*****CREAZIONE CHART ***** */
+  KeyLines.promisify();
+  KeyLines.create({ container: chartDiv }).then((loadedChart) => {
+    chart = loadedChart;
+    chart.load(nodes);
+    chart.layout("standard");
+    chart.on("selection-change", onSelection);
+    //chart.on("hover", hoverHandler);
+    const event = new CustomEvent('chart-ready', {detail:chart});
+    window.document.dispatchEvent(event);
+    //setUpEventHandlers();
+  });
+
+
+
+  //* SETTING LISTENERS */
+  // combine.addEventListener("click", () => {
+    
+
+  //   const event = new CustomEvent("chart-combined");
+  //   combineSelected().then(() => {   
+  //     window.document.dispatchEvent(event)});
+  // });
+
+  load.addEventListener("click", () => {
+    console.log("load clicked in chart");
+    const event = new CustomEvent("get-components", { detail: chart });
+    window.document.dispatchEvent(event);
+  });
+
+  
 });
 
-
+// document.addEventListener("DOMContentLoaded", () => {});
