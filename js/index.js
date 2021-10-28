@@ -50,19 +50,13 @@ const convertNodesToEntities = () => {
 };
 var [entities, events] = convertNodesToEntities();
 
-
+let chart;
 
 
 
 document.addEventListener("DOMContentLoaded", () => {
   console.log("page loaded. index.js");
-  const combine = document.getElementById("combine");
-  const uncombine = document.getElementById("uncombine");
   const load = document.getElementById("load_button");
-  const input = document.getElementById("datetime");
-  const backgroundSelect = document.getElementById("background-select");
-  const positionSelect = document.getElementById("position-select");
-  const labelSelect = document.getElementById("label-color-select");
 
   // ****** CREAZIONE TIMELINE ****** */
   // const timeline_container = document.getElementById("my-timeline");
@@ -88,199 +82,247 @@ document.addEventListener("DOMContentLoaded", () => {
     lineWidth: 6,
   };
 
-  const orderingName = {
-    orderingName: "firstevent",
-  };
-
   // costruzione effettiva timeline
   const entityTypes = { default: defaultEntityType };
   data["entityTypes"] = entityTypes;
   timeline.options(timelineOptions);
-  // timeline.setOrdering(orderingName);
+  timeline.setOrdering("alphabetical");
   timeline.set(data);
   timeline.fit();
 
-  const timeline_event = new CustomEvent('timeline-ready', {detail:timeline});
+  //***COSTRUZIONE KEYLINES */
+  KeyLines.promisify();
+  KeyLines.create({ container: "kl" }).then((loadedChart) => {
+    const options = { backColour: "#333" };
+    chart = loadedChart;
+    chart.options(options);
+    chart.load(nodes);
+    chart.layout("standard");
+    // chart.on("selection-change", onSelection);
+    //chart.on("hover", hoverHandler);
+    const event = new CustomEvent("chart-ready", { detail: chart });
+    window.document.dispatchEvent(event);
+    //setUpEventHandlers();
+  });
+
+  const timeline_event = new CustomEvent("timeline-ready", {
+    detail: {
+      timeline: timeline,
+      events: events,
+      entities: entities,
+      entityTypes: entityTypes,
+      timelineOptions: timelineOptions,
+      defaultEntityType: defaultEntityType,
+      entityTypes: entityTypes,
+      data: data,
+    },
+  });
   window.document.dispatchEvent(timeline_event);
+
+  // Get the modal
+  var modal = document.getElementById("myModal");
+
+  // Get the button that opens the modal
+  var btn = document.getElementById("options");
+
+  // Get the <span> element that closes the modal
+  var span = document.getElementsByClassName("close")[0];
+
+  // When the user clicks on the button, open the modal
+  btn.onclick = function () {
+    modal.style.display = "block";
+  };
+
+  // When the user clicks on <span> (x), close the modal
+  span.onclick = function () {
+    modal.style.display = "none";
+  };
+
+  // When the user clicks anywhere outside of the modal, close it
+  window.onclick = function (event) {
+    if (event.target == modal) {
+      modal.style.display = "none";
+    }
+  };
 
   //****** EVENT LISTENERS ******** */
 
-  load.addEventListener("click", () => {
-    console.log("load clicked in index");
-    const event = new CustomEvent('get-components', {detail:timeline});
-    window.document.dispatchEvent(event);
-  });
+  // load.addEventListener("click", () => {
+  //   console.log("load clicked in index");
+  //   const event = new CustomEvent('get-components', {detail:timeline});
+  //   window.document.dispatchEvent(event);
+  // });
 
-  combine.addEventListener("click", () => {
-    console.log("combine clicked");
-    combineSelected().then(() => {
-      let canvas_container = document.getElementById("kl").firstChild.id;
-      let newEntities = {};
-      KeyLines.components[canvas_container].each({ type: "node" }, (item) => {
-        let parentId = item.parentId;
-        if (parentId !== undefined && parentId !== null) {
-          console.log("combonode", item);
-          let name = item.t;
-          newEntities[item.id] = {
-            color: item.c,
-            label: name,
-            data: {
-              cluster: parentId,
-            },
-            type: "person",
-          };
-        } else {
-          let name = item.t;
-          let cluster = item.d.cluster;
-          newEntities[item.id] = {
-            color: item.c,
-            label: name,
-            data: {
-              cluster: cluster,
-            },
-            type: "person",
-          };
-        }
-      });
-      console.log("entities modificate", newEntities);
-      const currentData = {
-        entities: newEntities,
-        events: events,
-        entityTypes: {
-          person: {
-            groupBy: ["cluster"],
-          },
-        },
-      };
+  // combine.addEventListener("click", () => {
+  //   console.log("combine clicked");
+  //   combineSelected().then(() => {
+  //     let canvas_container = document.getElementById("kl").firstChild.id;
+  //     let newEntities = {};
+  //     KeyLines.components[canvas_container].each({ type: "node" }, (item) => {
+  //       let parentId = item.parentId;
+  //       if (parentId !== undefined && parentId !== null) {
+  //         console.log("combonode", item);
+  //         let name = item.t;
+  //         newEntities[item.id] = {
+  //           color: item.c,
+  //           label: name,
+  //           data: {
+  //             cluster: parentId,
+  //           },
+  //           type: "person",
+  //         };
+  //       } else {
+  //         let name = item.t;
+  //         let cluster = item.d.cluster;
+  //         newEntities[item.id] = {
+  //           color: item.c,
+  //           label: name,
+  //           data: {
+  //             cluster: cluster,
+  //           },
+  //           type: "person",
+  //         };
+  //       }
+  //     });
+  //     console.log("entities modificate", newEntities);
+  //     const currentData = {
+  //       entities: newEntities,
+  //       events: events,
+  //       entityTypes: {
+  //         person: {
+  //           groupBy: ["cluster"],
+  //         },
+  //       },
+  //     };
 
-      timeline.set(currentData);
-    });
+  //     timeline.set(currentData);
+  //   });
 
-    // let canvas_container = document.getElementById("kl").firstChild.id;
-    // setTimeout(() => {
-    //   let newEntities = {};
-    //   KeyLines.components[canvas_container].each({ type: "node" }, (item) => {
-    //     let parentId = item.parentId;
-    //     if (parentId !== undefined && parentId !== null) {
-    //       console.log("combonode", item);
-    //       let name = item.t;
-    //       newEntities[item.id] = {
-    //         color: item.c,
-    //         label: name,
-    //         data: {
-    //           cluster: parentId,
-    //         },
-    //         type: "person",
-    //       };
-    //     } else {
-    //       let name = item.t;
-    //       let cluster = item.d.cluster;
-    //       newEntities[item.id] = {
-    //         color: item.c,
-    //         label: name,
-    //         data: {
-    //           cluster: cluster,
-    //         },
-    //         type: "person",
-    //       };
-    //     }
-    //   });
-    //   console.log("entities modificate", newEntities);
-    //   const currentData = {
-    //     entities: newEntities,
-    //     events: events,
-    //     entityTypes: {
-    //       person: {
-    //         groupBy: ["cluster"],
-    //       },
-    //     },
-    //   };
+  //   // let canvas_container = document.getElementById("kl").firstChild.id;
+  //   // setTimeout(() => {
+  //   //   let newEntities = {};
+  //   //   KeyLines.components[canvas_container].each({ type: "node" }, (item) => {
+  //   //     let parentId = item.parentId;
+  //   //     if (parentId !== undefined && parentId !== null) {
+  //   //       console.log("combonode", item);
+  //   //       let name = item.t;
+  //   //       newEntities[item.id] = {
+  //   //         color: item.c,
+  //   //         label: name,
+  //   //         data: {
+  //   //           cluster: parentId,
+  //   //         },
+  //   //         type: "person",
+  //   //       };
+  //   //     } else {
+  //   //       let name = item.t;
+  //   //       let cluster = item.d.cluster;
+  //   //       newEntities[item.id] = {
+  //   //         color: item.c,
+  //   //         label: name,
+  //   //         data: {
+  //   //           cluster: cluster,
+  //   //         },
+  //   //         type: "person",
+  //   //       };
+  //   //     }
+  //   //   });
+  //   //   console.log("entities modificate", newEntities);
+  //   //   const currentData = {
+  //   //     entities: newEntities,
+  //   //     events: events,
+  //   //     entityTypes: {
+  //   //       person: {
+  //   //         groupBy: ["cluster"],
+  //   //       },
+  //   //     },
+  //   //   };
 
-    //   timeline.set(currentData);
-    // }, 1000);
-  });
+  //   //   timeline.set(currentData);
+  //   // }, 1000);
+  // });
 
-  uncombine.addEventListener("click", () => {
-    uncombineSelected().then(() => {
-      let newEntities = {};
-      let canvas_container = document.getElementById("kl").firstChild.id;
-      KeyLines.components[canvas_container].each({ type: "node" }, (item) => {
-        let parentId = item.parentId;
-        if (parentId === undefined || parentId === null) {
-          let name = item.t;
-          newEntities[item.id] = {
-            color: item.c,
-            label: name,
-            data: {
-              cluster: item.id,
-            },
-            type: "person",
-          };
-        } else {
-          let name = item.t;
-          newEntities[item.id] = {
-            color: item.c,
-            label: name,
-            data: {
-              cluster: parentId,
-            },
-            type: "person",
-          };
-        }
-      });
-      console.log("entities modificate", newEntities);
-      const currentData = {
-        entities: newEntities,
-        events: events,
-        entityTypes: {
-          person: {
-            groupBy: ["cluster"],
-          },
-        },
-      };
+  // uncombine.addEventListener("click", () => {
+  //   uncombineSelected().then(() => {
+  //     let newEntities = {};
+  //     let canvas_container = document.getElementById("kl").firstChild.id;
+  //     KeyLines.components[canvas_container].each({ type: "node" }, (item) => {
+  //       let parentId = item.parentId;
+  //       if (parentId === undefined || parentId === null) {
+  //         let name = item.t;
+  //         newEntities[item.id] = {
+  //           color: item.c,
+  //           label: name,
+  //           data: {
+  //             cluster: item.id,
+  //           },
+  //           type: "person",
+  //         };
+  //       } else {
+  //         let name = item.t;
+  //         newEntities[item.id] = {
+  //           color: item.c,
+  //           label: name,
+  //           data: {
+  //             cluster: parentId,
+  //           },
+  //           type: "person",
+  //         };
+  //       }
+  //     });
+  //     console.log("entities modificate", newEntities);
+  //     const currentData = {
+  //       entities: newEntities,
+  //       events: events,
+  //       entityTypes: {
+  //         person: {
+  //           groupBy: ["cluster"],
+  //         },
+  //       },
+  //     };
 
-      timeline.set(currentData);
-    });
-  });
+  //     timeline.set(currentData);
+  //   });
+  // });
 
-  input.addEventListener("change", (event) => {
-    console.log("data acquisita", event.target.value);
-    timeline.markers([
-      {
-        label: "first marker",
-        time: new Date(event.target.value),
-      },
-    ]);
-  });
+  // input.addEventListener("change", (event) => {
+  //   console.log("data acquisita", event.target.value);
+  //   timeline.markers([
+  //     {
+  //       label: "first marker",
+  //       time: new Date(event.target.value),
+  //     },
+  //   ]);
+  // });
 
-  backgroundSelect.addEventListener("change", (e) => {
-    const value = e.target.value;
-    timelineOptions.backgroundColor = value;
-    timeline.options(timelineOptions);
-  });
+  // backgroundSelect.addEventListener("change", (e) => {
+  //   const value = e.target.value;
+  //   timelineOptions.backgroundColor = value;
+  //   timeline.options(timelineOptions);
+  // });
 
-  positionSelect.addEventListener("change", (e) => {
-    const value = e.target.value;
-    if (value === "both") {
-      timelineOptions.scales.showAtBottom = true;
-      timelineOptions.scales.showAtTop = true;
-    } else if (value === "top") {
-      timelineOptions.scales.showAtBottom = false;
-      timelineOptions.scales.showAtTop = true;
-    } else {
-      timelineOptions.scales.showAtBottom = true;
-      timelineOptions.scales.showAtTop = false;
-    }
-    timeline.options(timelineOptions);
-  });
+  // positionSelect.addEventListener("change", (e) => {
+  //   const value = e.target.value;
+  //   if (value === "both") {
+  //     timelineOptions.scales.showAtBottom = true;
+  //     timelineOptions.scales.showAtTop = true;
+  //   } else if (value === "top") {
+  //     timelineOptions.scales.showAtBottom = false;
+  //     timelineOptions.scales.showAtTop = true;
+  //   } else {
+  //     timelineOptions.scales.showAtBottom = true;
+  //     timelineOptions.scales.showAtTop = false;
+  //   }
+  //   timeline.options(timelineOptions);
+  // });
 
-  labelSelect.addEventListener("change", (e) => {
-    const colour = e.target.value;
-    defaultEntityType.labelColor = colour;
-    entityTypes.default = defaultEntityType;
-    data["entityTypes"] = entityTypes;
-    timeline.set(data);
-  });
+  // labelSelect.addEventListener("change", (e) => {
+  //   const colour = e.target.value;
+  //   defaultEntityType.labelColor = colour;
+  //   entityTypes.default = defaultEntityType;
+  //   data["entityTypes"] = entityTypes;
+  //   timeline.set(data);
+  // });
 });
 
 // document.addEventListener("DOMContentLoaded", function () {
