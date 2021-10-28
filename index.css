@@ -8,6 +8,7 @@ body {
   font-family: "Lato", sans-serif;
   color: #333;
   line-height: 1.6;
+  
 }
 
 .navbar {
@@ -33,14 +34,18 @@ body {
   color: chocolate;
 }
 
+
+
 .container {
+  
   height: 100vh;
   width: 100%;
   display: flex;
+  overflow: auto;
 }
 
 .timeline-container {
-  width: 50%;
+  width: 60%;
   height: 100vh;
   /* resize: horizontal;
     overflow: auto; */
@@ -59,7 +64,7 @@ body {
 }
 
 .kl-container {
-  width: 50%;
+  width: 40%;
   height: 100vh;
 }
 
@@ -67,13 +72,13 @@ body {
   display: flex;
   width: 100%;
   background-color: #43a081;
-  height: 200px;
+  height: 80px;
   justify-content:center;
   align-items: center;
 }
 
 .ui-container input{
-  border-radius:5px;
+  border-radius:3px;
   height:30px;
   transition:all ease 200ms;
   font-family: inherit;
@@ -86,7 +91,7 @@ body {
 
 .ui-container input:hover{
   cursor: pointer;
-  transform: scale(0.98);
+  
 }
 
 .ui-container label{
@@ -141,6 +146,38 @@ body {
   position: absolute;
   transition: all .35s ease-Out;
   bottom: 0;
+}
+
+/* STYLING SECTION */
+.styling-container{
+  display: flex;
+  height: 80px;
+  background-color: #43a081;
+  align-items: center;
+  justify-content: space-around;
+  flex-wrap: wrap;
+}
+
+
+
+.styling-container label{
+  color: #333;
+  font-size: 20px;
+  font-weight: 600 ;
+  font-family: inherit;
+}
+
+.styling-container select{
+  width: 70px;
+  text-align: center;
+  height: 28px;
+  font-size: 15px;
+  border: none;
+  color: white;
+  background-color: #333;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  margin-left: 8px;
 }
 
 
