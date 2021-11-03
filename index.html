@@ -10,7 +10,7 @@
     <script src="js/index.js"></script>
     <script src="js/data.js" defer></script>
     <script defer src="js/controller.js"></script>
-
+    
     <title>KronoPlainJs</title>
   </head>
   <body>
@@ -22,8 +22,11 @@
       <button type="button" class="ui-button" id="uncombine">Uncombine</button>
       <button type="button" class="ui-button" id="combine">Combine</button>
       <button type="button" class="ui-button" id="load_button">Load</button>
+      <button class="ui-button" id="reset_button">Fit</button>
       <input type="date" name="DateTime" id="datetime" />
       <label for="datetime">Set Marker</label>
+      <input type="text" id="key_filter">
+      <label for="filter">Key Filter</label>
     </div>
     <div class="container">
       <div class="timeline-container">
@@ -58,17 +61,8 @@
           <option value="white" selected>White</option>
         </select>
       </div>
-      <div class="options">
-        <button id="options" type="button">Open</button>
-      </div>
+      
     </div>
-    <!-- The Modal -->
-    <div id="myModal" class="modal">
-      <!-- Modal content -->
-      <div class="modal-content">
-        <span class="close">x</span>
-        <p>Some text in the Modal..</p>
-      </div>
-    </div>
+    
   </body>
 </html>

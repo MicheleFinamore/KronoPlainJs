@@ -1,5 +1,9 @@
-import { schede,data_schede } from "./data";
+import { schede, data_schede } from "./data";
 
+import { card_data, chart_card } from "./chart";
+
+
+// console.log("dentro controller");
 
 // get html elements
 const combine = document.getElementById("combine");
@@ -9,8 +13,9 @@ const input = document.getElementById("datetime");
 const backgroundSelect = document.getElementById("background-select");
 const positionSelect = document.getElementById("position-select");
 const labelSelect = document.getElementById("label-color-select");
+const input_filter = document.getElementById("key_filter");
+const reset = document.getElementById("reset_button");
 
-console.log("dentro controller");
 let timeline;
 let chart;
 let entities;
@@ -19,9 +24,14 @@ let timelineOptions;
 let defaultEntityType;
 let entityTypes;
 let data;
-let currentNode=null;
+let currentNode = null;
 let currentClicked = null;
+let currentDataSet;
+let timelineCurrentHover = null;
 
+//*** CUSTOM EVENTS ***/
+
+// timeline ready
 window.document.addEventListener("timeline-ready", (ev) => {
   timeline = ev.detail.timeline;
   entities = ev.detail.entities;
@@ -30,9 +40,14 @@ window.document.addEventListener("timeline-ready", (ev) => {
   defaultEntityType = ev.detail.defaultEntityType;
   entityTypes = ev.detail.entityTypes;
   data = ev.detail.data;
+  timeline.on("drag-start", dragStartHandler);
+  timeline.on("hover", timelineHoverHandler);
+  timeline.on("focus",timelineFocusHandler);
+  timeline.on('click',timelineCLickHandler);
   console.log("timeline in controller");
 });
 
+// chart ready
 window.document.addEventListener("chart-ready", (ev) => {
   chart = ev.detail;
   chart.on("hover", hoverHandler);
@@ -49,8 +64,18 @@ window.document.addEventListener("chart-combined", () => {
   console.log("chart combined in controller and selection", selected);
 });
 
-//*** HANDLERS *** */
+//*** HANDLERS ***/
 
+// quando la keyfilter cambia effettuo il focus su kronograph
+input_filter.addEventListener("change", (event) => {
+  let val = event.target.value;
+  console.log("val", val);
+  console.log('timeline', timeline);
+  console.log(timeline.getEntity(val));
+  timeline.focus(val);
+});
+
+// setting del marker
 input.addEventListener("change", (event) => {
   console.log("data acquisita", event.target.value);
   timeline.markers([
@@ -61,12 +86,14 @@ input.addEventListener("change", (event) => {
   ]);
 });
 
+// setting background
 backgroundSelect.addEventListener("change", (e) => {
   const value = e.target.value;
   timelineOptions.backgroundColor = value;
   timeline.options(timelineOptions);
 });
 
+//setting position timeline
 positionSelect.addEventListener("change", (e) => {
   console.log("in position");
   const value = e.target.value;
@@ -83,14 +110,17 @@ positionSelect.addEventListener("change", (e) => {
   timeline.options(timelineOptions);
 });
 
+// setting label color
 labelSelect.addEventListener("change", (e) => {
   const colour = e.target.value;
   defaultEntityType.labelColor = colour;
   entityTypes.default = defaultEntityType;
   data["entityTypes"] = entityTypes;
   timeline.set(data);
+  timeline.fit();
 });
 
+// combina i nodi di keylines e clusterizza le corrispettive entità su kronograph
 combine.addEventListener("click", () => {
   combineSelected().then(() => {
     let newEntities = {};
@@ -133,6 +163,7 @@ combine.addEventListener("click", () => {
   });
 });
 
+// come combine ma al contrario
 uncombine.addEventListener("click", () => {
   uncombineSelected().then(() => {
     let newEntities = {};
@@ -175,42 +206,62 @@ uncombine.addEventListener("click", () => {
   });
 });
 
+// prende i dati provenienti dal chart e reinizializza il grafo relazionale e quello temporale
 load.addEventListener("click", () => {
   console.log("load");
-  chart.load(schede);
-  chart.layout('standard');
-
-  timeline.set(data_schede);
+  
+  // // chart.load(schede);
+  let chart_to_load = {
+    type: "LinkChart",
+    items: card_data.chart_elements,
+  };
+  chart.load(chart_to_load);
+  chart.layout("standard");
+  console.log()
+  // timeline.set(data_schede);
+  timeline.set({
+    events: card_data.events,
+    entities: card_data.entities,
+  });
   timeline.setOrdering("alphabetical");
+  timeline.fit();
+
+  data = { ...data, events: card_data.events, entities: card_data.entities };
+});
+
+// fa la fit del timeline
+reset.addEventListener("click", () => {
   timeline.fit();
 });
 
 
+// gestisce l'hover su keyline
 function hoverHandler({ id }) {
-  console.log("id", id);
-  console.log("currentNode", currentNode);
+  // console.log("id", id);
+  // console.log("currentNode", currentNode);
   if (id === null) {
     if (currentNode === null) {
       return;
     } else {
       const item = chart.getItem(currentNode);
       chart.setProperties({ id: item.id, b: "No border" });
-      timeline.highlight('');
-      currentNode=null;
+      timeline.highlight("");
+      currentNode = null;
     }
   } else {
     const item = chart.getItem(id);
     // and update the chart
-    chart.setProperties({ id: item.id, b: "red" });
+    chart.setProperties({ id: item.id, b: "#07ed1a" });
     timeline.highlight(id);
     currentNode = id;
-
   }
 }
 
-function clickHandler({id}){
-  console.log("id", id);
-  console.log("currentClicked", currentClicked);
+// gestisce il click su keyline
+function clickHandler({ id }) {
+  // console.log("id", id);
+  // console.log("currentClicked", currentClicked);
+
   if (id === null) {
     if (currentClicked === null) {
       return;
@@ -227,17 +278,58 @@ function clickHandler({id}){
   }
 }
 
+// consente di settare una finestra temporale di analisi su kronograph usando il mouse destro
+function dragStartHandler({ setDragOptions, button }) {
+  if (button === 2) {
+    setDragOptions({
+      type: "marqueeRange",
+    });
+  }
+}
 
+// gestisce l'hover sul timeline
+function timelineHoverHandler(event) {
+  // console.log("targetType", event.targetType);
+  // console.log("id", event.id);
+  // console.log('timelinecurrent start', timelineCurrentHover);
+  if (event.id === null) {
+    if (timelineCurrentHover === null) {
+      return;
+    } else {
+      console.log('timelinecurrent', timelineCurrentHover);
+      chart.setProperties({ id: timelineCurrentHover, b: "No border" });
+    }
+  } else {
+    const item = chart.getItem(event.id);
+    if (event.targetType === "entity") {
+      chart.setProperties({ id: item.id, b: "#07ed1a" });
+    }else{
+     if(event.targetType ==='event'){
+      chart.selection(item.id);
+     }else{
+       return;
+     } 
+      
+    }
+    timelineCurrentHover = event.id;
+  }
+}
 
+// gestisce il focus di kronograph effettuando il foreground dell'entità selezionata sul chart di keyline
+function timelineFocusHandler(event){
+  let elements = event.focus;
+  let id = elements[0];
+  if (chart.getItem(id)) {
+    const neighbours = chart.graph().neighbours(id).nodes;
+    chart.foreground((node) => node.id === id || neighbours.includes(node.id));
+  } else {
+    chart.foreground((node) => true);
+  }
+}
 
-
-
-
-
-
-
-
-
+function timelineCLickHandler(event){
+  console.log("timeline click handler", event);
+}
 
 
 

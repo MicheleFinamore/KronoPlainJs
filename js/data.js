@@ -1,3 +1,5 @@
+
+
 const elements = [
   { id: "1", type: "node", t: "Person1", c: "#f86868", d: { cluster: "1" } },
   { id: "2", type: "node", t: "Person2", c: "#f7d06e", d: { cluster: "2" } },
@@ -11,7 +13,7 @@ const elements = [
     id2: "2",
     a2: true,
     type: "link",
-    c: "#2da167",
+    c: "#edecdf",
     d: new Date(2020, 6, 1, 12, 0),
   },
   {
@@ -20,7 +22,7 @@ const elements = [
     id2: "5",
     a2: true,
     type: "link",
-    c: "#2da167",
+    c: "#edecdf",
     d: new Date(2020, 6, 1, 8, 0),
   },
   {
@@ -29,7 +31,7 @@ const elements = [
     id2: "3",
     a2: true,
     type: "link",
-    c: "#2da167",
+    c: "#edecdf",
     d: new Date(2020, 6, 1, 5, 0),
   },
   {
@@ -38,7 +40,7 @@ const elements = [
     id2: "4",
     a2: true,
     type: "link",
-    c: "#2da167",
+    c: "#edecdf",
     d: new Date(2020, 6, 1, 15, 0),
   },
   {
@@ -47,7 +49,7 @@ const elements = [
     id2: "1",
     a2: true,
     type: "link",
-    c: "#2da167",
+    c: "#edecdf",
     d: new Date(2020, 6, 1, 19, 0),
   },
   {
@@ -56,7 +58,7 @@ const elements = [
     id2: "2",
     a2: true,
     type: "link",
-    c: "#2da167",
+    c: "#edecdf",
     d: new Date(2020, 6, 1, 21, 0),
   },
 ];
@@ -7845,6 +7847,8 @@ export const schede = {
   ],
 };
 
+
+
 function createCustomEntity(id, color, cluster, label, type) {
   return {
     color: color,
@@ -7856,48 +7860,61 @@ function createCustomEntity(id, color, cluster, label, type) {
   };
 }
 
-// const obj = JSON.parse(schede);
-let item_schede = schede.items;
-var count = 2;
-var flag = "";
-var entities_schede = {};
-var events_schede = {};
-var cluster = ["CEO", "Assistant", "Employe"];
-item_schede.forEach((elem) => {
-  let type = elem.d.itemType;
+function convertSchede(){
+  // const obj = JSON.parse(schede);
+  let item_schede = schede.items;
+  var count = 2;
+  var flag = "";
+  var entities_schede = {};
+  var events_schede = {};
+  var cluster = ["CEO", "Assistant", "Employe"];
 
-  // gestisco i numeri di telefono
-  if (type === "PhoneNumber") {
-    // imposto il CEO
-    if (elem.id === "00393299897693") {
-      let entity = createCustomEntity("", "#205aab", "CEO", elem.t, "PhoneNumber");
-      entities_schede[elem.id] = entity;
-      count++;
-    } else {
-      // alterno assistenti e impiegati
-      if (count %2 == 1) {
-        flag = "Manager";
-        var color = "#cc513b";
+  item_schede.forEach((elem) => {
+    let type = elem.d.itemType;
+
+    // gestisco i numeri di telefono
+    if (type === "PhoneNumber") {
+      // imposto il CEO
+      if (elem.id === "00393299897693") {
+        let entity = createCustomEntity(
+          "",
+          "#205aab",
+          "Group A",
+          elem.t,
+          "PhoneNumber"
+        );
+        entities_schede[elem.id] = entity;
+        count++;
       } else {
-        flag = "Employee";
-        var color = "#6acc98";
+        // alterno assistenti e impiegati
+        if (count % 2 == 1) {
+          flag = "Group B";
+          var color = "#cc513b";
+        } else {
+          flag = "Group C";
+          var color = "#6acc98";
+        }
+        let entity = createCustomEntity("", color, flag, elem.t, "PhoneNumber");
+        entities_schede[elem.id] = entity;
+        count++;
       }
-      let entity = createCustomEntity("", color, flag, elem.t, "PhoneNumber");
-      entities_schede[elem.id] = entity;
-      count++;
+    } else {
+      if (type === "Chiamata") {
+        let callID = elem.id;
+        let time = randomDate(new Date(2020, 0, 1), new Date(2020, 0, 2));
+        events_schede[callID] = {
+          entityIds: [elem.id1, elem.id2],
+          time: time,
+          color: "from",
+        };
+      }
     }
-  } else {
-    if (type === "Chiamata") {
-      let callID = elem.id;
-      let time = randomDate(new Date(2020, 0, 1), new Date(2020, 0, 2));
-      events_schede[callID] = {
-        entityIds: [elem.id1, elem.id2],
-        time: time,
-        color: "from",
-      };
-    }
-  }
-});
+  });
+
+  return [entities_schede,events_schede]
+}
+
+var [entities_schede,events_schede] = convertSchede();
 
 export const data_schede = {
   entities: entities_schede,

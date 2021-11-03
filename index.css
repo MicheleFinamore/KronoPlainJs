@@ -4,11 +4,29 @@
   margin: 0;
 }
 
+
+
 body {
   font-family: "Lato", sans-serif;
   color: #333;
   line-height: 1.6;
   
+}
+
+body::-webkit-scrollbar {
+  width: 14px; /* width of the entire scrollbar */
+  border-radius: 4px;
+  height: 12px;
+}
+
+body::-webkit-scrollbar-track {
+  background: white; /* color of the tracking area */
+}
+
+body::-webkit-scrollbar-thumb {
+  background-color: #333; /* color of the scroll thumb */
+  border-radius: 20px; /* roundness of the scroll thumb */
+  border: 3px solid white; /* creates padding around scroll thumb */
 }
 
 .navbar {
@@ -37,11 +55,11 @@ body {
 
 
 .container {
-  
+  border: 1px solid white;
   height: 100vh;
   width: 100%;
   display: flex;
-  overflow: auto;
+  overflow: hidden;
 }
 
 .timeline-container {
@@ -87,12 +105,11 @@ body {
   justify-self:right;
   margin-left: 15%;
   margin-right: 5px;
-  border: 2px solid #333;
+  border: 1px solid white;
 }
 
 .ui-container input:hover{
   cursor: pointer;
-  
 }
 
 .ui-container label{
@@ -181,43 +198,64 @@ body {
   margin-left: 8px;
 }
 
- /* The Modal (background) */
+/* The Modal (background) */
 .modal {
-    display: none; /* Hidden by default */
-    position: fixed; /* Stay in place */
-    z-index: 1; /* Sit on top */
-    left: 0;
-    top: 0;
-    width: 100%; /* Full width */
-    height: 100%; /* Full height */
-    overflow: auto; /* Enable scroll if needed */
-    background-color: rgb(0,0,0); /* Fallback color */
-    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 10; /* Sit on top */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0, 0, 0); /* Fallback color */
+  background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
 }
 
 /* Modal Content/Box */
 .modal-content {
-    background-color: #fefefe;
-    margin: 15% auto; /* 15% from the top and centered */
-    padding: 20px;
-    border: 1px solid #888;
-    width: 80%; /* Could be more or less, depending on screen size */
+  background-color: #fefefe;
+  border: 1px solid white;
+  border-radius: 2px;
+  width: 500px;
+  height: 350px;
+  display: flex;
+  flex-direction: column;
+  margin: 15% auto;
+}
+
+.modal-header {
+  background-color: #43a081;
+  height: 40px;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.modal-body{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #51615c;
+  height: 100%;
 }
 
 /* The Close Button */
 .close {
-    color: #aaa;
-    float: right;
-    font-size: 28px;
-    font-weight: bold;
+  color: white;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+  margin-right: 10px;
 }
 
 .close:hover,
 .close:focus {
-    color: black;
-    text-decoration: none;
-    cursor: pointer;
+  color: #333;
+  text-decoration: none;
+  cursor: pointer;
 }
+
 .options{
   color: white;
 }
