@@ -6,27 +6,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="./index.css" />
     <script src="js/keylines.js" defer></script>
-    <script src="js/chart.js" defer></script>
-    <script defer src="js/index.js"></script>
+    <script src="js/chart.js" ></script>
+    <script src="js/index.js"></script>
     <script src="js/data.js" defer></script>
-    
-    
-    <title>Document</title>
+    <script defer src="js/controller.js"></script>
+
+    <title>KronoPlainJs</title>
   </head>
   <body>
-    <div class="navbar">
-      <!-- <div class="nav-item">Home</div>
+    <!-- <div class="nav-item">Home</div>
       <div class="nav-item">About</div>
       <div class="nav-item">Contact</div>
        -->
-      <div class="ui-container">
+    <div class="ui-container">
       <button type="button" class="ui-button" id="uncombine">Uncombine</button>
       <button type="button" class="ui-button" id="combine">Combine</button>
-      <button type="button" class="ui-button" id="load">Load</button> 
-      <input type="date" name="DateTime" id="datetime">
-      <label for="datetime">Set Marker</label>  
-     
-    </div>
+      <button type="button" class="ui-button" id="load_button">Load</button>
+      <input type="date" name="DateTime" id="datetime" />
+      <label for="datetime">Set Marker</label>
     </div>
     <div class="container">
       <div class="timeline-container">
@@ -34,6 +31,33 @@
       </div>
       <div class="kl-container" id="kl"></div>
     </div>
-    
+    <div class="styling-container">
+      <div class="background-container">
+        <label for="background-select">Background</label>
+        <select name="" id="background-select" class="select">
+          <option value="#333" selected>Default</option>
+          <option value="#3153a3">Blue</option>
+          <option value="#bf4234">Red</option>
+          <option value="#edd661">Ambra</option>
+        </select>
+      </div>
+      <div class="position-container">
+        <label for="position-select">Position</label>
+        <select name="" id="position-select" class="select">
+          <option value="both">Both</option>
+          <option value="top">Top</option>
+          <option value="bottom" selected>Bottom</option>
+        </select>
+      </div>
+       <div class="label-color-container">
+        <label for="label-color-select">Label Color</label>
+        <select name="" id="label-color-select" class="select">
+          <option value="#3153a3">Blue</option>
+          <option value="#bf4234">Red</option>
+          <option value="#edd661">Ambra</option>
+          <option value="white" selected>White</option>
+        </select>
+      </div>
+    </div>
   </body>
 </html>
