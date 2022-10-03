@@ -3,11 +3,14 @@
   "version": "1.0.0",
   "license": "UNLICENSED",
   "dependencies": {
-    "@babel/core": "^7.0.0",
-    "kronograph": "file:kronograph-1.8.0.tgz",
-    "parcel": "2.0.0-beta.1"
+    "@babel/core": "^7.17.5",
+    "kronograph": "file:kronograph-1.13.3-expires-2022-10-31.tgz"
   },
   "scripts": {
-    "start": "parcel index.html -p 3001"
+    "start": "parcel index.html -p 3001",
+    "build": "parcel build"
+  },
+  "devDependencies": {
+    "parcel": "^2.0.0-beta.1"
   }
 }

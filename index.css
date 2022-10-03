@@ -10,7 +10,8 @@ body {
   font-family: "Lato", sans-serif;
   color: #333;
   line-height: 1.6;
-  
+  display : flex;
+  flex-direction: column;
 }
 
 body::-webkit-scrollbar {
@@ -30,7 +31,7 @@ body::-webkit-scrollbar-thumb {
 }
 
 .navbar {
-  height: 70px;
+  height: 10vh;
   width: 100%;
   background-color: #333;
   display: flex;
@@ -41,7 +42,7 @@ body::-webkit-scrollbar-thumb {
 .nav-item {
   color: white;
   width: 40px;
-  padding: 3px;
+  padding: 5px 10px;
   font: inherit;
   cursor: pointer;
   margin-right: 3%;
@@ -54,9 +55,8 @@ body::-webkit-scrollbar-thumb {
 
 
 
-.container {
+.main-container {
   border: 1px solid white;
-  height: 100vh;
   width: 100%;
   display: flex;
   overflow: hidden;
@@ -64,13 +64,15 @@ body::-webkit-scrollbar-thumb {
 
 .timeline-container {
   width: 60%;
-  height: 100vh;
+  height: 80vh;
+  /* height: 100vh; */
   /* resize: horizontal;
     overflow: auto; */
 }
 
 #my-timeline {
-  height: 100vh;
+  /* height: 100vh; */
+  height: 80vh;
 }
 
 .test {
@@ -83,7 +85,7 @@ body::-webkit-scrollbar-thumb {
 
 .kl-container {
   width: 40%;
-  height: 100vh;
+  height: 80vh;
   border-left: 1px solid white;
 }
 
@@ -91,7 +93,7 @@ body::-webkit-scrollbar-thumb {
   display: flex;
   width: 100%;
   background-color: #43a081;
-  height: 80px;
+  height: 10vh;
   justify-content:center;
   align-items: center;
 }
@@ -103,9 +105,13 @@ body::-webkit-scrollbar-thumb {
   font-family: inherit;
   font-size: 15px;
   justify-self:right;
-  margin-left: 15%;
+  margin-left: 150px;
   margin-right: 5px;
   border: 1px solid white;
+}
+
+.ui-container input:focus{
+  outline: none;
 }
 
 .ui-container input:hover{
@@ -126,7 +132,7 @@ body::-webkit-scrollbar-thumb {
   border: none;
   cursor: pointer;
   font-weight: 500;
-  transition: box-shadow 0.35s ease-out;
+  transition: all 0.4s ease-out;
   
   position: relative;
   margin: 5px;
@@ -137,11 +143,16 @@ body::-webkit-scrollbar-thumb {
   box-shadow: inset 0 0 0 0 #f9e506;
 }
 
+.ui-button:active{
+  transform: scale(1.1);
+}
+
 .ui-button:hover{
   /* transform: scale(0.95); */
-  box-shadow: inset 130px 0 0 0 #f9e506;
-  color: #333;
-  transform: scale(0.96);
+  /* box-shadow: inset 130px 0 0 0 #f9e506; */
+  opacity: 0.8;
+  /* color: #333; */
+  /* transform: scale(1.03); */
 }
 
 /* .ui-button p{
@@ -169,7 +180,7 @@ body::-webkit-scrollbar-thumb {
 /* STYLING SECTION */
 .styling-container{
   display: flex;
-  height: 80px;
+  height: 10vh;
   background-color: #43a081;
   align-items: center;
   justify-content: space-around;

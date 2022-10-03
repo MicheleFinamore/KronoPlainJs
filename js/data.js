@@ -7,60 +7,60 @@ const elements = [
   { id: "4", type: "node", t: "Person4", c: "#5dbbb4", d: { cluster: "4" } },
   { id: "5", type: "node", t: "Person5", c: "#ff8834", d: { cluster: "5" } },
   { id: "6", type: "node", t: "Person6", c: "#b360d6", d: { cluster: "6" } },
-  {
-    id: "link1",
-    id1: "1",
-    id2: "2",
-    a2: true,
-    type: "link",
-    c: "#edecdf",
-    d: new Date(2020, 6, 1, 12, 0),
-  },
-  {
-    id: "link2",
-    id1: "1",
-    id2: "5",
-    a2: true,
-    type: "link",
-    c: "#edecdf",
-    d: new Date(2020, 6, 1, 8, 0),
-  },
-  {
-    id: "link3",
-    id1: "2",
-    id2: "3",
-    a2: true,
-    type: "link",
-    c: "#edecdf",
-    d: new Date(2020, 6, 1, 5, 0),
-  },
-  {
-    id: "link4",
-    id1: "3",
-    id2: "4",
-    a2: true,
-    type: "link",
-    c: "#edecdf",
-    d: new Date(2020, 6, 1, 15, 0),
-  },
-  {
-    id: "link5",
-    id1: "3",
-    id2: "1",
-    a2: true,
-    type: "link",
-    c: "#edecdf",
-    d: new Date(2020, 6, 1, 19, 0),
-  },
-  {
-    id: "link6",
-    id1: "6",
-    id2: "2",
-    a2: true,
-    type: "link",
-    c: "#edecdf",
-    d: new Date(2020, 6, 1, 21, 0),
-  },
+  // {
+  //   id: "link1",
+  //   id1: "1",
+  //   id2: "2",
+  //   a2: true,
+  //   type: "link",
+  //   c: "#edecdf",
+  //   d: new Date(2020, 6, 1, 12, 0),
+  // },
+  // {
+  //   id: "link2",
+  //   id1: "1",
+  //   id2: "5",
+  //   a2: true,
+  //   type: "link",
+  //   c: "#edecdf",
+  //   d: new Date(2020, 6, 1, 8, 0),
+  // },
+  // {
+  //   id: "link3",
+  //   id1: "2",
+  //   id2: "3",
+  //   a2: true,
+  //   type: "link",
+  //   c: "#edecdf",
+  //   d: new Date(2020, 6, 1, 5, 0),
+  // },
+  // {
+  //   id: "link4",
+  //   id1: "3",
+  //   id2: "4",
+  //   a2: true,
+  //   type: "link",
+  //   c: "#edecdf",
+  //   d: new Date(2020, 6, 1, 15, 0),
+  // },
+  // {
+  //   id: "link5",
+  //   id1: "3",
+  //   id2: "1",
+  //   a2: true,
+  //   type: "link",
+  //   c: "#edecdf",
+  //   d: new Date(2020, 6, 1, 19, 0),
+  // },
+  // {
+  //   id: "link6",
+  //   id1: "6",
+  //   id2: "2",
+  //   a2: true,
+  //   type: "link",
+  //   c: "#edecdf",
+  //   d: new Date(2020, 6, 1, 21, 0),
+  // },
 ];
 
 export const nodes = {
@@ -7901,7 +7901,7 @@ function convertSchede(){
     } else {
       if (type === "Chiamata") {
         let callID = elem.id;
-        let time = randomDate(new Date(2020, 0, 1), new Date(2020, 0, 2));
+        let time = randomDate(new Date(2022, 9, 1), new Date(2022, 10, 30));
         events_schede[callID] = {
           entityIds: [elem.id1, elem.id2],
           time: time,
@@ -7932,5 +7932,5 @@ function randomDate(start, end) {
   );
 }
 
-// const d = randomDate(new Date(2020, 0, 1), new Date(2020, 1, 1));
-// console.log(d);
+const d = randomDate(new Date(2022, 9, 1), new Date(2022, 11, 1));
+console.log(d);

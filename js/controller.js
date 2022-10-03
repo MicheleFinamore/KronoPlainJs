@@ -1,5 +1,4 @@
 import { schede, data_schede } from "./data";
-
 import { card_data, chart_card } from "./chart";
 
 
@@ -9,11 +8,12 @@ import { card_data, chart_card } from "./chart";
 const combine = document.getElementById("combine");
 const uncombine = document.getElementById("uncombine");
 const load = document.getElementById("load_button");
-const input = document.getElementById("datetime");
+const date_input = document.getElementById("datetime");
 const backgroundSelect = document.getElementById("background-select");
 const positionSelect = document.getElementById("position-select");
 const labelSelect = document.getElementById("label-color-select");
 const input_filter = document.getElementById("key_filter");
+const filter_button = document.getElementById('filter')
 const reset = document.getElementById("reset_button");
 
 let timeline;
@@ -66,17 +66,25 @@ window.document.addEventListener("chart-combined", () => {
 
 //*** HANDLERS ***/
 
-// quando la keyfilter cambia effettuo il focus su kronograph
-input_filter.addEventListener("change", (event) => {
-  let val = event.target.value;
-  console.log("val", val);
-  console.log('timeline', timeline);
-  console.log(timeline.getEntity(val));
-  timeline.focus(val);
-});
 
-// setting del marker
-input.addEventListener("change", (event) => {
+filter_button.addEventListener('click', () =>{
+  const value = input_filter.value
+  timeline.focus(value)
+
+
+})
+
+// quando la keyfilter cambia effettuo il focus su kronograph
+// input_filter.addEventListener("change", (event) => {
+//   let val = event.target.value;
+//   console.log("val", val);
+//   console.log('timeline', timeline);
+//   console.log(timeline.getEntity(val));
+//   timeline.focus(val);
+// });
+
+// setting del marker temorale
+date_input.addEventListener("change", (event) => {
   console.log("data acquisita", event.target.value);
   timeline.markers([
     {
